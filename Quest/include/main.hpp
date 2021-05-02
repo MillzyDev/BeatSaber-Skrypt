@@ -12,3 +12,8 @@
 // Define these functions here so that we can easily read configuration and log information from other files
 Configuration& getConfig();
 Logger& getLogger();
+
+static std::string modDataPath;
+static std::string modFontsPath;
+
+bool endsWith(std::string str, std::string end);

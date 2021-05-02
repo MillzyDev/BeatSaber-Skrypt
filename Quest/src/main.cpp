@@ -8,6 +8,7 @@
 
 #include "TMPro/TextMeshPro.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
+#include "TMPro/TMP_FontAsset.hpp"
 
 static ModInfo modInfo; // Stores the ID and version of our mod, and is sent to the modloader upon startup
 
@@ -22,6 +23,22 @@ Configuration& getConfig() {
 Logger& getLogger() {
     static Logger* logger = new Logger(modInfo);
     return *logger;
+}
+
+void makeFolder(std::string directory){
+    if (!direxists(directory.c_str())) {
+        int makePath = mkpath(directory.data());
+        if (makePath == -1) {
+            getLogger().error("Failed to make path %s", directory.c_str());
+        }
+    }
+}
+
+bool endsWith(std::string str, std::string end) {
+    auto itr = str.begin();
+    return str.size() >= end.size() && std::all_of(std::next(str.begin(), str.size() - end.size()), str.end(), [&itr](const char& c) {
+        return c == *(itr++);
+    });
 }
 
 // Called at the early stages of game loading
@@ -43,6 +60,8 @@ MAKE_HOOK_OFFSETLESS(TextMeshPro_Awake, void,
     self->set_fontStyle(getFontStyle());
 }
 
+
+
 MAKE_HOOK_OFFSETLESS(TextMeshProUGUI_Awake, void,
  TMPro::TextMeshProUGUI* self
 ) {
@@ -53,6 +72,17 @@ MAKE_HOOK_OFFSETLESS(TextMeshProUGUI_Awake, void,
 // Called later on in the game loading - a good time to install function hooks
 extern "C" void load() {
     il2cpp_functions::Init();
+
+    std::string datapath = getDataDir(modInfo);
+    makeFolder(datapath);
+    modDataPath = datapath;
+    getLogger().info("SKRYPT-DATA: Mod Data Path: %s", modDataPath);
+
+    std::string fontpath = datapath;
+    fontpath += "Fonts";
+    makeFolder(fontpath);
+    modFontsPath = fontpath;
+    getLogger().info("SKRYPT-DATA: Mod Data Path: %s", modDataPath);
 
     getLogger().info("Installing hooks...");
     // Install our hooks (none defined yet)

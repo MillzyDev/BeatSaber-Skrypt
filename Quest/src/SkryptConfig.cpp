@@ -17,6 +17,9 @@ void createConfig() {
     if (!getConfig().config.HasMember("case")) {
         getConfig().config.AddMember("case", rapidjson::Value(0).SetInt(0), allocator);
     }
+    if (!getConfig().config.HasMember("fontFile")) {
+        getConfig().config.AddMember("fontFile", rapidjson::Value(0).SetString(""), allocator);
+    }
 
     getConfig().Write();
 }
