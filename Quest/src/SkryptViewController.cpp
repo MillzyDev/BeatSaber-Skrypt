@@ -56,49 +56,14 @@ UnityEngine::UI::Button* lowerCase;
 
 UnityEngine::UI::Button* apply;
 
+
+
 bool bold = getConfig().config["isBold"].GetBool();
 bool strikethrough = getConfig().config["isStrikethrough"].GetBool();
 bool underline = getConfig().config["isUnderline"].GetBool();
 
 int _case = getConfig().config["case"].GetInt(); // 0 = Normal, 1 = LowerCase, 2 = UpperCase
 
-void LoadFontList(UnityEngine::Transform* parent) { // MUST BE CALLED AFTER preview IS INITIALISED!
-    for (UnityEngine::UI::Button* button : fontVector) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
-
-    fontVector = {};
-    DIR* fontDir = opendir(modFontsPath.c_str());
-    dirent* fileEnt;
-
-    if (fontDir == nullptr) {
-        QuestUI::BeatSaberUI::CreateText(parent, "Error opening dir")->set_color(UnityEngine::Color::get_gray());
-        QuestUI::BeatSaberUI::CreateText(parent, "Error opening dir")->set_color(UnityEngine::Color::get_gray());
-        return;
-    }
-    while((fileEnt = readdir(fontDir)) != NULL) {
-        std::string filename = fileEnt->d_name;
-
-        if (endsWith(filename, ".ttf") || endsWith(filename, ".otf")) {
-            UnityEngine::UI::Button* fontButton = QuestUI::BeatSaberUI::CreateUIButton(parent, filename, 
-                [filename]() {
-                    std::string fontPath = modFontsPath;
-                    fontPath += "/";
-                    fontPath += filename;
-
-                    UnityEngine::Font* font = (UnityEngine::Font*)UnityEngine::Resources::Load(il2cpp_utils::newcsstr(fontPath.c_str()));
-                    TMPro::TMP_FontAsset* fontAsset = TMPro::TMP_FontAsset::CreateFontAsset(font);
-
-                    preview->set_font(fontAsset);
-                }
-            );
-            fontVector.push_back(fontButton);
-        }
-    }
-    closedir(fontDir);
-
-    if (fontVector.size() == 0) {
-        QuestUI::BeatSaberUI::CreateText(parent, "You don't have any custom fonts installed.")->set_color(UnityEngine::Color::get_gray());
-    }
-}
 
 void Skrypt::SkryptViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     if (firstActivation) {
@@ -123,21 +88,6 @@ void Skrypt::SkryptViewController::DidActivate(bool firstActivation, bool addedT
         preview->set_alignment(TMPro::TextAlignmentOptions::Midline);
 
     //   ========================== PREVIEW ABOVE =============================
-    //   ======================= FONT SETTINGS BELOW ==========================
-
-        fontLayout = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_transform());
-        fontLayout->get_transform()->set_localPosition(UnityEngine::Vector3(-75, 0, 0));
-        fontLayout->set_padding(UnityEngine::RectOffset::New_ctor(10, 10, -20, -20));
-        fontLayout->get_gameObject()->AddComponent<QuestUI::Backgroundable*>()->ApplyBackground(il2cpp_utils::newcsstr("round-rect-panel"));
-
-        font_title = QuestUI::BeatSaberUI::CreateText(fontLayout->get_transform(), "Fonts:");
-        font_title->set_fontSize(6);
-        font_title->set_fontStyle(TMPro::FontStyles::Underline);
-        font_title->set_alignment(TMPro::TextAlignmentOptions::Midline);
-
-        LoadFontList(fontLayout->get_transform());
-
-    //  ======================== FONT SETTINGS ABOVE ==========================
 
         layout = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_transform());
         layout->get_gameObject()->AddComponent<QuestUI::Backgroundable*>()->ApplyBackground(il2cpp_utils::newcsstr("round-rect-panel"));

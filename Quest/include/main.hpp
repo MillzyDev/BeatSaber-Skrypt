@@ -13,7 +13,4 @@
 Configuration& getConfig();
 Logger& getLogger();
 
-static std::string modDataPath;
-static std::string modFontsPath;
-
 bool endsWith(std::string str, std::string end);
