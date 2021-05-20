@@ -18,5 +18,7 @@ void createConfig() {
         getConfig().config.AddMember("case", rapidjson::Value(0).SetInt(0), allocator);
     }
 
+    
+
     getConfig().Write();
 }
